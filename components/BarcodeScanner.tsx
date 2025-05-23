@@ -58,11 +58,12 @@ const BarcodeScanner = ({ onDetected }: { onDetected: (code: string) => void }) 
 
   return (
     <div
-      ref={scannerRef}
-      className="w-full h-96 bg-gray-300 rounded-lg flex items-center justify-center"
-    >
-      <p className="text-gray-600">📷 Point your camera at a barcode</p>
-    </div>
+  ref={scannerRef}
+  id="scanner"
+  className="w-full max-w-md h-96 mx-auto bg-gray-300 rounded-lg flex items-center justify-center relative overflow-hidden"
+>
+  <p className="text-gray-600 absolute z-10">📷 Point your camera at a barcode</p>
+</div>
   );
 };
 
