@@ -36,18 +36,21 @@ const BarcodeScanner = ({ onDetected }: { onDetected: (code: string) => void }) 
         );
 
         Quagga.onDetected((data) => {
-          const code = data.codeResult.code;
-          onDetected(code);
-        });
-      }, 300);
-    }
+  const code = data.codeResult.code;
+
+  if (!code) return; // ✅ Skip if code is null or undefined
+
+  Quagga.stop();
+  Quagga.offDetected();
+
+  onDetected(code); // ✅ TypeScript now knows this is a string
+});
 
     return () => {
-      isActive = false;
-      Quagga.stop();
-      Quagga.offDetected(onDetected);
-    };
-  }, [onDetected]);
+  isActive = false;
+  Quagga.stop();
+  Quagga.offDetected(); // ✅ no arguments
+};
 
   return (
     <div
