@@ -9,48 +9,52 @@ const BarcodeScanner = ({ onDetected }: { onDetected: (code: string) => void }) 
   useEffect(() => {
     let isActive = true;
 
-    if (scannerRef.current) {
-      setTimeout(() => {
-        if (!isActive) return;
+    const startScanner = () => {
+      if (!scannerRef.current) return;
 
-        Quagga.init(
-          {
-            inputStream: {
-              type: "LiveStream",
-              target: scannerRef.current as Element,
-              constraints: {
-                facingMode: "environment",
-              },
-            },
-            decoder: {
-              readers: ["ean_reader", "upc_reader"],
+      Quagga.init(
+        {
+          inputStream: {
+            type: "LiveStream",
+            target: scannerRef.current as Element,
+            constraints: {
+              facingMode: "environment",
             },
           },
-          (err) => {
-            if (err) {
-              console.error("Quagga init error:", err);
-              return;
-            }
-            Quagga.start();
+          decoder: {
+            readers: ["ean_reader", "upc_reader"],
+          },
+        },
+        (err) => {
+          if (err) {
+            console.error("Quagga init error:", err);
+            return;
           }
-        );
+          Quagga.start();
+        }
+      );
 
-        Quagga.onDetected((data) => {
-  const code = data.codeResult.code;
+      Quagga.onDetected((data) => {
+        const code = data.codeResult.code;
+        if (!code) return;
 
-  if (!code) return; // ✅ Skip if code is null or undefined
+        Quagga.stop();
+        Quagga.offDetected();
 
-  Quagga.stop();
-  Quagga.offDetected();
+        onDetected(code);
+      });
+    };
 
-  onDetected(code); // ✅ TypeScript now knows this is a string
-});
+    setTimeout(() => {
+      if (isActive) startScanner();
+    }, 300);
 
     return () => {
-  isActive = false;
-  Quagga.stop();
-  Quagga.offDetected(); // ✅ no arguments
-};
+      isActive = false;
+      Quagga.stop();
+      Quagga.offDetected();
+    };
+  }, [onDetected]);
 
   return (
     <div
