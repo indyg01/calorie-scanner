@@ -5,8 +5,20 @@ import BarcodeScanner from "@/components/BarcodeScanner";
 
 export default function Home() {
   const [barcode, setBarcode] = useState<string | null>(null);
-  const [product, setProduct] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+
+  type Product = {
+  product_name: string;
+  brands: string;
+  image_front_url: string;
+  nutriments: {
+    energy_kcal_100g: number;
+    fat_100g: number;
+    carbohydrates_100g: number;
+    proteins_100g: number;
+  };
+};
+
+const [product, setProduct] = useState<Product | null>(null);  const [error, setError] = useState<string | null>(null);
 
   const fetchProductData = async (code: string) => {
     try {
@@ -33,27 +45,23 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen p-4 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">Calorie Scanner App</h1>
+  <div className="min-h-screen p-4 bg-gray-100">
+    <h1 className="text-2xl font-bold mb-4">Calorie Scanner App</h1>
 
-      {!product && !error && <BarcodeScanner onDetected={handleDetected} />}
+    {!product && !error && <BarcodeScanner onDetected={handleDetected} />}
 
-      {product && (
-        <div className="mt-6 bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-semibold mb-2">{product.product_name}</h2>
-          <p className="mb-1">Brand: {product.brands}</p>
-          <p className="mb-1">Calories per 100g: {product.nutriments?.energy_kcal_100g}</p>
-          <p className="mb-1">Fat: {product.nutriments?.fat_100g}g</p>
-          <p className="mb-1">Carbs: {product.nutriments?.carbohydrates_100g}g</p>
-          <p className="mb-1">Protein: {product.nutriments?.proteins_100g}g</p>
+    {barcode && (
+      <p className="mt-4 text-gray-700">🔍 Scanned Barcode: {barcode}</p>
+    )}
 
-          {product.image_front_url && (
-            <img src={product.image_front_url} alt="Product" className="w-32 mt-4" />
-          )}
-        </div>
-      )}
+    {product && (
+      <div className="mt-6 bg-white p-4 rounded shadow">
+        <h2 className="text-xl font-semibold mb-2">{product.product_name}</h2>
+        ...
+      </div>
+    )}
 
-      {error && <p className="mt-6 text-red-600">{error}</p>}
-    </div>
-  );
+    {error && <p className="mt-6 text-red-600">{error}</p>}
+  </div>
+);
 }
