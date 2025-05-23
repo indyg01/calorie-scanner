@@ -17,7 +17,7 @@ const BarcodeScanner = ({ onDetected }: { onDetected: (code: string) => void }) 
           {
             inputStream: {
               type: "LiveStream",
-              target: scannerRef.current,
+              target: scannerRef.current as Element,
               constraints: {
                 facingMode: "environment",
               },
