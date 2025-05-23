@@ -9,6 +9,9 @@ const BarcodeScanner = ({ onDetected }: { onDetected: (code: string) => void }) 
   useEffect(() => {
     let isActive = true;
 
+    let lastCode = "";
+    let sameCodeCount = 0;
+
     const startScanner = () => {
       if (!scannerRef.current) return;
 
@@ -38,11 +41,19 @@ const BarcodeScanner = ({ onDetected }: { onDetected: (code: string) => void }) 
         const code = data.codeResult.code;
         if (!code) return;
 
+        if (code === lastCode) {
+        sameCodeCount++;
+      } else {
+        lastCode = code;
+        sameCodeCount = 1;
+      }
+
+      if (sameCodeCount >= 3) {
         Quagga.stop();
         Quagga.offDetected();
-
         onDetected(code);
-      });
+      }
+    });
     };
 
     setTimeout(() => {
